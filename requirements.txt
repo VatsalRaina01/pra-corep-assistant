@@ -18,11 +18,6 @@ langchain-community==0.0.10
 # Vector Database
 chromadb==0.4.22
 
-# Document Processing
-pypdf==4.0.0
-beautifulsoup4==4.12.3
-lxml==5.1.0
-
 # Data & Validation
 pandas==2.2.0
 jsonschema==4.21.0
