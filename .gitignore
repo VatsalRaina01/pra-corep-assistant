@@ -1,0 +1,46 @@
+# Dependent Modules
+node_modules/
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Large Data & Vector DB
+backend/data/
+*.zip
+*.tar.gz
+*.iso
+*.bin
+*.exe
+*.dll
+
+# IDEs & System
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Documentation
+# Ignore all markdown files except README.md
+*.md
+!README.md
+
+# Nested markdown exclusions (optional but safer)
+**/*.md
+!README.md
+!**/README.md
+
+# Build Outputs
+dist/
+build/
+.vercel
