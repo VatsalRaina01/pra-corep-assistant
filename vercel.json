@@ -1,5 +1,10 @@
 {
     "version": 2,
+    "build": {
+        "env": {
+            "PYO3_USE_ABI3_FORWARD_COMPATIBILITY": "1"
+        }
+    },
     "rewrites": [
         {
             "source": "/api/(.*)",
