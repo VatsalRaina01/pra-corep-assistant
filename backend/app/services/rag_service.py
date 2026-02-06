@@ -1,28 +1,13 @@
-import chromadb
-from chromadb.config import Settings as ChromaSettings
+"""Lightweight RAG service for Vercel deployment (no ChromaDB)."""
 from typing import List, Dict, Any
-from app.config import settings
+
 
 class RAGService:
-    """Service for RAG-based retrieval of regulatory text."""
+    """Service for RAG-based retrieval of regulatory text (lightweight version)."""
     
     def __init__(self):
-        """Initialize ChromaDB client and collection."""
-        self.client = chromadb.PersistentClient(
-            path=settings.chroma_persist_directory
-        )
-        
-        # Get or create collection
-        try:
-            self.collection = self.client.get_collection("pra_rulebook")
-        except:
-            # Create collection if it doesn't exist
-            self.collection = self.client.create_collection(
-                name="pra_rulebook",
-                metadata={"description": "PRA Rulebook and COREP instructions"}
-            )
-            # Initialize with sample data
-            self._initialize_sample_data()
+        """Initialize with inline regulatory data."""
+        self.documents = self._get_regulatory_documents()
     
     def retrieve_relevant_rules(
         self,
@@ -31,7 +16,7 @@ class RAGService:
         top_k: int = 5
     ) -> List[Dict[str, Any]]:
         """
-        Retrieve relevant regulatory text using semantic search.
+        Retrieve relevant regulatory text using keyword matching.
         
         Args:
             query: Natural language query
@@ -41,37 +26,34 @@ class RAGService:
         Returns:
             List of relevant documents with metadata
         """
-        try:
-            # Build where filter
-            where_filter = None
-            if template_filter:
-                where_filter = {"template": template_filter}
+        # Simple keyword-based retrieval for demo
+        query_lower = query.lower()
+        scored_docs = []
+        
+        for doc in self.documents:
+            score = 0
+            text_lower = doc["text"].lower()
             
-            # Query collection
-            results = self.collection.query(
-                query_texts=[query],
-                n_results=top_k,
-                where=where_filter
-            )
+            # Score based on keyword matches
+            keywords = ["tier 1", "cet1", "own funds", "capital", "tier 2", "at1"]
+            for keyword in keywords:
+                if keyword in query_lower and keyword in text_lower:
+                    score += 0.2
             
-            # Format results
-            documents = []
-            if results and results.get('documents') and len(results['documents']) > 0:
-                for i, doc in enumerate(results['documents'][0]):
-                    metadata = results['metadatas'][0][i] if results['metadatas'] else {}
-                    distance = results['distances'][0][i] if results['distances'] else 0
-                    
-                    documents.append({
-                        "text": doc,
-                        "metadata": metadata,
-                        "relevance_score": 1 - distance  # Convert distance to similarity
-                    })
-            
-            return documents
-            
-        except Exception as e:
-            print(f"RAG Error: {e}")
-            return self._get_fallback_documents()
+            # Template filter
+            if template_filter and doc["metadata"].get("template") != template_filter:
+                continue
+                
+            if score > 0:
+                scored_docs.append({
+                    "text": doc["text"],
+                    "metadata": doc["metadata"],
+                    "relevance_score": min(score, 1.0)
+                })
+        
+        # Sort by score and return top_k
+        scored_docs.sort(key=lambda x: x["relevance_score"], reverse=True)
+        return scored_docs[:top_k] if scored_docs else self._get_fallback_documents()
     
     def format_context_for_llm(self, documents: List[Dict[str, Any]]) -> str:
         """Format retrieved documents for LLM prompt."""
@@ -92,9 +74,9 @@ class RAGService:
         
         return "\n---\n".join(context_parts)
     
-    def _initialize_sample_data(self):
-        """Initialize collection with sample PRA Rulebook data."""
-        sample_documents = [
+    def _get_regulatory_documents(self) -> List[Dict[str, Any]]:
+        """Return inline regulatory documents."""
+        return [
             {
                 "text": """Article 25: Common Equity Tier 1 items
                 
@@ -170,42 +152,8 @@ All amounts shall be reported in thousands of the reporting currency.""",
                     "template": "C_01_00",
                     "topic": "Template instructions"
                 }
-            },
-            {
-                "text": """Article 28: Conditions for classification as Common Equity Tier 1 instruments
-
-Capital instruments shall qualify as Common Equity Tier 1 instruments only if all of the following conditions are met:
-
-(a) the instruments are issued directly by the institution with the prior approval of the owners of the institution or, where permitted under applicable national law, the management body of the institution;
-
-(b) the instruments are paid up and their purchase is not funded directly or indirectly by the institution;
-
-(c) the instruments meet all the criteria for classification as equity specified in the applicable accounting standards;
-
-(d) the instruments are perpetual;
-
-(e) the principal amount of the instruments may not be reduced or repaid, except in either of the following cases:
-    (i) the liquidation of the institution;
-    (ii) discretionary repurchases of the instruments or other discretionary means of reducing capital, where the institution has received the prior permission of the competent authority.""",
-                "metadata": {
-                    "source": "PRA Rulebook",
-                    "article": "Article 28",
-                    "template": "C_01_00",
-                    "topic": "CET1 instrument criteria"
-                }
             }
         ]
-        
-        # Add documents to collection
-        texts = [doc["text"] for doc in sample_documents]
-        metadatas = [doc["metadata"] for doc in sample_documents]
-        ids = [f"doc_{i}" for i in range(len(sample_documents))]
-        
-        self.collection.add(
-            documents=texts,
-            metadatas=metadatas,
-            ids=ids
-        )
     
     def _get_fallback_documents(self) -> List[Dict[str, Any]]:
         """Return fallback documents if retrieval fails."""

@@ -1,4 +1,4 @@
-# Root requirements for Vercel
+# Minimal requirements for Vercel Serverless (under 250MB)
 # Core Framework
 fastapi==0.109.0
 uvicorn[standard]==0.27.0
@@ -6,21 +6,9 @@ pydantic==2.5.3
 pydantic-settings==2.1.0
 python-dotenv==1.0.0
 
-# OpenAI SDK for GitHub Models
+# OpenAI SDK for GitHub Models (lightweight)
 openai>=1.50.0
 httpx==0.27.2
-
-# LangChain
-langchain==0.1.0
-langchain-openai==0.0.2
-langchain-community==0.0.10
-
-# Vector Database
-chromadb==0.4.22
-
-# Data & Validation
-pandas==2.2.0
-jsonschema==4.21.0
 
 # Utilities
 tenacity==8.2.3
