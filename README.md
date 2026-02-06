@@ -205,7 +205,6 @@ pra-corep-assistant/
 │   └── package.json                         # Node dependencies
 ├── README.md                                # This file
 ├── SETUP.md                                 # Detailed setup guide
-├── VIDEO_DEMO_SCRIPT.md                     # Demo recording script
 └── start.ps1                                # Quick start script
 ```
 
@@ -265,14 +264,7 @@ STEP 4 - VERIFY: Check cross-field consistency
 ## 📚 Documentation
 
 - **[SETUP.md](SETUP.md)**: Detailed installation and configuration
-- **[VIDEO_DEMO_SCRIPT.md](VIDEO_DEMO_SCRIPT.md)**: Demo recording guide
 - **API Docs**: http://localhost:8000/docs (when running)
-
----
-
-## 🎬 Demo Video
-
-[Record a 3-5 minute demo following the script in VIDEO_DEMO_SCRIPT.md]
 
 ---
 
@@ -314,12 +306,7 @@ MIT License - see LICENSE file for details
 
 ## 👤 Author
 
-[Your Name]
-
-**Contact:**
-- GitHub: [your-github]
-- Email: [your-email]
-- LinkedIn: [your-linkedin]
+Vatsal Raina
 
 ---
 
@@ -330,12 +317,3 @@ MIT License - see LICENSE file for details
 - FastAPI and React communities
 - ChromaDB for vector storage
 
----
-
-<div align="center">
-
-**Built with ❤️ using cutting-edge LLM technology**
-
-[⭐ Star this repo](https://github.com/your-username/pra-corep-assistant) | [🐛 Report Bug](https://github.com/your-username/pra-corep-assistant/issues) | [💡 Request Feature](https://github.com/your-username/pra-corep-assistant/issues)
-
-</div>
