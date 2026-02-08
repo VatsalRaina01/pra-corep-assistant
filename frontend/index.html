@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRA COREP Assistant | Regulatory Reporting</title>
+    <meta name="description"
+        content="AI-powered assistant for PRA COREP regulatory reporting - Own Funds (CA1) and Capital Requirements (CA2) templates.">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                        <path d="M2 17l10 5 10-5" />
+                        <path d="M2 12l10 5 10-5" />
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>PRA COREP Assistant</h1>
+                    <span class="subtitle">Regulatory Reporting</span>
+                </div>
+            </div>
+
+            <!-- Mode Toggle -->
+            <div class="mode-toggle">
+                <button class="mode-btn active" data-mode="chat">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                    Chat
+                </button>
+                <button class="mode-btn" data-mode="analyze">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <path d="M3 9h18" />
+                        <path d="M9 21V9" />
+                    </svg>
+                    Analyze
+                </button>
+            </div>
+
+            <div class="header-right">
+                <div class="status-indicator" id="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Connected</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Chat Mode -->
+            <div class="chat-container" id="chat-container">
+                <div class="welcome-message" id="welcome-message">
+                    <div class="welcome-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 16v-4" />
+                            <path d="M12 8h.01" />
+                        </svg>
+                    </div>
+                    <h2>Welcome to PRA COREP Assistant</h2>
+                    <p>I can help with regulatory reporting requirements and template population:</p>
+                    <div class="capability-grid">
+                        <div class="capability-card">
+                            <div class="capability-icon">📊</div>
+                            <h3>CA1 Own Funds</h3>
+                            <p>CET1, AT1, Tier 2 capital composition</p>
+                        </div>
+                        <div class="capability-card">
+                            <div class="capability-icon">💰</div>
+                            <h3>CA2 Capital Requirements</h3>
+                            <p>RWA, ratios, buffer requirements</p>
+                        </div>
+                        <div class="capability-card">
+                            <div class="capability-icon">⚠️</div>
+                            <h3>Validation</h3>
+                            <p>Automated checks and error detection</p>
+                        </div>
+                        <div class="capability-card">
+                            <div class="capability-icon">📝</div>
+                            <h3>Audit Trail</h3>
+                            <p>Rule citations for each field</p>
+                        </div>
+                    </div>
+                    <p class="start-prompt">Ask a question or switch to <strong>Analyze</strong> mode to populate
+                        templates...</p>
+                </div>
+                <div class="messages" id="messages"></div>
+            </div>
+
+            <!-- Analyze Mode -->
+            <div class="analyze-container" id="analyze-container" style="display: none;">
+                <!-- Template Selection -->
+                <div class="template-selector">
+                    <label>Template:</label>
+                    <select id="template-select">
+                        <option value="CA1">C 01.00 - Own Funds (CA1)</option>
+                        <option value="CA2">C 02.00 - Capital Requirements (CA2)</option>
+                    </select>
+                </div>
+
+                <!-- Results Panel -->
+                <div class="results-panel" id="results-panel" style="display: none;">
+                    <!-- Template View -->
+                    <div class="template-view">
+                        <div class="panel-header">
+                            <h3 id="template-title">Template</h3>
+                            <button class="export-btn" id="export-pdf-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="7,10 12,15 17,10" />
+                                    <line x1="12" y1="15" x2="12" y2="3" />
+                                </svg>
+                                Export PDF
+                            </button>
+                        </div>
+                        <div class="template-table-container">
+                            <table class="template-table" id="template-table">
+                                <thead>
+                                    <tr>
+                                        <th>Row</th>
+                                        <th>Item</th>
+                                        <th>Value (£m)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="template-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Panels -->
+                    <div class="sidebar-panels">
+                        <!-- Totals & Ratios -->
+                        <div class="panel totals-panel">
+                            <h4>Totals & Ratios</h4>
+                            <div id="totals-content"></div>
+                        </div>
+
+                        <!-- Validation -->
+                        <div class="panel validation-panel">
+                            <h4>Validation Results</h4>
+                            <div id="validation-content"></div>
+                        </div>
+
+                        <!-- Audit Trail -->
+                        <div class="panel audit-panel">
+                            <h4>Audit Trail</h4>
+                            <div id="audit-content"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Placeholder when no analysis -->
+                <div class="analyze-placeholder" id="analyze-placeholder">
+                    <div class="placeholder-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <path d="M3 9h18" />
+                            <path d="M9 21V9" />
+                        </svg>
+                    </div>
+                    <h3>Template Analysis</h3>
+                    <p>Describe your bank's capital position below to populate the COREP template.</p>
+                    <div class="example-scenario">
+                        <strong>Example scenario:</strong>
+                        <p>"Our bank has ordinary share capital of £500m, share premium £200m, retained earnings £150m,
+                            intangible assets £30m, subordinated debt (Tier 2) £100m, and total RWAs of £4 billion."</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <textarea id="message-input" placeholder="Describe your capital scenario or ask a question..."
+                        rows="1" maxlength="4000"></textarea>
+                    <button id="send-button" class="send-button" title="Send">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13" />
+                            <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="input-footer">
+                    <span class="char-count"><span id="char-count">0</span>/4000</span>
+                    <span class="hint" id="mode-hint">Press Enter to send</span>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
